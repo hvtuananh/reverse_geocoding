@@ -20,7 +20,7 @@ for i in range(total):
     s = shapes[i]
     
     bbl = int(float(r[68]))
-    addr = r[11]
+    addr = r[11].strip()
     zipcode = r[8]
     bbox = (convert_latlng(s.bbox[:2]), convert_latlng(s.bbox[2:]))
     points = []
@@ -30,9 +30,25 @@ for i in range(total):
     pos = addr.find(' ')
     if pos == -1:
         continue
+    
+    try:
+        house_no = int(addr[:pos])
+    except:
+        #print bbl
+        continue    
+    
+    street = addr[pos+1:].strip()
+    
+    #special case for 1/2 address
+    if street[:3] == '1/2':
+        street = street[4:]
         
-    house_no = addr[:pos]
-    street = addr[pos+1:]
+    #special case for * address and Y address (only one)
+    street = street.strip('*')
+    if street == '':
+        continue
+    if street[:2] == 'Y ':
+        street = street[2:]
         
     res = {}
     res['bbl'] = bbl
