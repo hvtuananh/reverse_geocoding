@@ -1,12 +1,35 @@
 import pickle
+import csv
 
 class Geocoder:
     def __init__(self, address_filename, location_filename):
         self.addresses = pickle.load(open(address_filename))
         self.locations = pickle.load(open(location_filename))
         
+        prefixes = list(csv.reader(open('address_prefix_standardization.txt')))
+        self.prefixes = {}
+        for p in prefixes:
+            self.prefixes[p[0]] = p[1]
+            
+        suffixes = list(csv.reader(open('address_suffix_standardization.txt')))
+        self.suffixes = {}
+        for p in suffixes:
+            self.suffixes[p[0]] = p[1]
+        
     def address_to_latlng(self, str_addr):
         addr = str_addr.strip().upper()
+        
+        #standardize
+        addrs = addr.split()
+        new_addrs = []
+        for w in addrs:
+            if w in self.prefixes:
+                w = self.prefixes[w]
+            elif w in self.suffixes:    
+                w = self.suffixes[w]
+            new_addrs.append(w)
+        addr = ' '.join(new_addrs)
+        
         pos = addr.find(' ')
         if pos == -1:
             return None
