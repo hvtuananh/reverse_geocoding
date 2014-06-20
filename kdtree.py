@@ -19,7 +19,7 @@ class KdNode:
             return self.left.find_candidate(loc, depth+1)+self.right.find_candidate(loc, depth+1)
             
     def search(self, loc):
-        candidates = self.find_candidate(loc)
+        candidates = set(self.find_candidate(loc))
         for res in candidates:
             if self.point_inside_polygon(loc, res['points']):
                 return res['addr']
